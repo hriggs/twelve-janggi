@@ -365,8 +365,6 @@ public class Board {
      */
      public boolean movePiece(int rowStart, int colStart, int rowEnd, int colEnd) { 
        
-       System.out.println("Game over at start of movePiece? " + isGameOver());
-       
        // if piece on right
        if (colStart > 3) {
          
@@ -400,7 +398,9 @@ public class Board {
            if (redKingTurns == 1) {
              gameOver = true;
              winner = "red";
-           } else if (greenKingTurns == 1) {
+           } 
+           
+           if (greenKingTurns == 1) {
              gameOver = true;
              winner = "green";
            }
@@ -424,7 +424,8 @@ public class Board {
        if (!board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
          
          boolean canMove = false;
-         boolean increasedKingCount = false;
+         boolean increasedRedKingCount = false;
+         boolean increasedGreenKingCount = false;
          
          int rowSubtract = rowEnd - rowStart;
            
@@ -435,17 +436,13 @@ public class Board {
            
            // either row or column changes by 1, but not both
            if ((rowDif == 1 && colDif == 0) || (rowDif == 0 && colDif == 1)) {
-             System.out.println("general can move here");
              canMove = true;
-             //return true;
            }
          } else if (typeSelected.equals("Minister")) {
            
            // both row and column change by 1
            if (rowDif == 1 && colDif == 1) {
-             System.out.println("minister can move here");
              canMove = true;
-             //return true;
            } 
          } else if (typeSelected.equals("Man")) {
            
@@ -454,7 +451,6 @@ public class Board {
              
              // red man (bottom)
              if (teamSelected.equals("bottom") && rowSubtract == -1) {
-               System.out.println("red man can move here");
                
                if (rowEnd == 0) { // will become feudal lord
                  // change into feudal lord
@@ -463,12 +459,10 @@ public class Board {
                }
                
                canMove = true;
-               //return true;
              }
              
              // green man (top)
              if (teamSelected.equals("top") && rowSubtract == 1) {
-               System.out.println("green man can move here");
                canMove = true;
                
                if (rowEnd == 3) { // will become feudal lord
@@ -493,7 +487,7 @@ public class Board {
                  System.out.println("green king in enemy territory");
                  
                  greenKingTurns++;
-                 increasedKingCount = true;
+                 increasedGreenKingCount = true;
                  
                  if (greenKingTurns == 2) {
                    gameOver = true;
@@ -505,7 +499,7 @@ public class Board {
                  System.out.println("redking in enemy territory");
                  
                  redKingTurns++;
-                 increasedKingCount = true;
+                 increasedRedKingCount = true;
                  
                  if (redKingTurns == 2) {
                    gameOver = true;
@@ -613,15 +607,17 @@ public class Board {
            // place piece in final spot
            place(myPiece, rowEnd, colEnd); 
            
-              // check if king won by being in enemy territory for second turn
-              // if var == 1, then that means the first turn in the enemy territory was the previous turn
-              if (redKingTurns == 1 && increasedKingCount == false) {
-                gameOver = true;
-                winner = "red";
-              } else if (greenKingTurns == 1 && increasedKingCount == false) {
-                gameOver = true;
-                winner = "green";
-              }
+           // check if king won by being in enemy territory for second turn
+           // if var == 1, then that means the first turn in the enemy territory was the previous turn
+           if (redKingTurns == 1 && increasedRedKingCount == false) {
+             gameOver = true;
+             winner = "red";
+           } 
+              
+           if (greenKingTurns == 1 && increasedGreenKingCount == false) {
+             gameOver = true;
+             winner = "green";
+           }
             
            // write move in file
            writer.println(teamSelected + " " + typeSelected + 
@@ -668,7 +664,6 @@ public class Board {
             pieceSelected = true; 
             board[ySelect/150][xSelect/150].select();
             selectedPiece = board[ySelect/150][xSelect/150].getPiece();
-            System.out.println("slected piece: " + selectedPiece.getType());
         }
     }
 
