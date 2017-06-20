@@ -353,19 +353,6 @@ public class Board {
          }
        }
      }
-     
-     /**
-      * Set the king's coordinates. TODO - might get rid of
-      */
-     private void kingCoordinates() {
-       if (teamSelected.equals("bottom")) { // update bottom/red
-         redCol = 3;
-         redRow = 3;
-       } else {
-         greenCol = 3;
-         greenRow = 0;
-       }
-     }
 
     /**
      * Allows a piece to be made between starting and ending coordinates. If move can be made, return true. Otherwise, return false. 
@@ -383,8 +370,6 @@ public class Board {
        // if piece on right
        if (colStart > 3) {
          
-         //System.out.println("PIECE ON RIGHT");
-         
          // cannot move piece within right side
          if (colEnd >= 3 || colEnd < 0) {
            return false;
@@ -394,8 +379,6 @@ public class Board {
          
          // ending square must be of own type or of type center and must be empty
          if ((endTile.getType().equals(teamSelected) || endTile.getType().equals("center")) && endTile.getPiece().getType().equals("none")) { 
-           
-           //System.out.println("should be able to move");
            
            // move piece
            // store starting piece and reset ending coordinates
@@ -500,7 +483,6 @@ public class Board {
            
            // valid move
            if ((rowDif == 1 && colDif == 0) || (rowDif == 0 && colDif == 1) || (rowDif == 1 && colDif == 1)) {
-            // System.out.println("king can move here");
              canMove = true;
              
              // check if king moved into the opponent's territory (or continues in enemy territory)
@@ -573,18 +555,16 @@ public class Board {
              
              // change team to my team
              opponentPiece.setTeam(teamSelected);
-             
-             //System.out.println("new team: " + opponentPiece.getTeam());
            
              // set new coordinates of piece - green = default
-             int capturedRow;
-             int capturedCol;
+             int capturedRow = greenRow;
+             int capturedCol = greenCol;
              
              String type = opponentPiece.getType();
              
              if (teamSelected.equals("bottom")) { // bottom = red
-               //capturedRow = redRow;
-               //capturedCol = redCol;
+               capturedRow = redRow;
+               capturedCol = redCol;
                
                if (type.equals("Minister")) {
                  opponentPiece.setImage(redMinisterImg);
@@ -596,14 +576,9 @@ public class Board {
                  opponentPiece.setImage(redManImg); 
                  opponentPiece.setType("Man");
                } else if (type.equals("King")) {
-                 System.out.println("KING WAS CAPTURED"); // TODO FIX
                  gameOver = true;
                  winner = "red";
-                 kingCoordinates();
                }
-               
-               capturedRow = redRow;
-               capturedCol = redCol;
              } else {  // top = green
                if (type.equals("Minister")) {
                  opponentPiece.setImage(greenMinisterImg);
@@ -615,22 +590,21 @@ public class Board {
                  opponentPiece.setImage(greenManImg); 
                  opponentPiece.setType("Man");
                } else if (type.equals("King")) {
-                 System.out.println("KING WAS CAPTURED"); // TODO FIX
                  gameOver = true;
                  winner = "green";
-                 kingCoordinates();
                }
-               
-               capturedRow = greenRow;
-               capturedCol = greenCol;
              }
-           
-              opponentPiece.setRow(capturedRow);
-              opponentPiece.setCol(capturedCol); 
-              place(opponentPiece, capturedRow, capturedCol);
+             
+             // only put piece on right if it is not a king (kings just disappear)
+             if (!type.equals("King")) {
+               opponentPiece.setRow(capturedRow);
+               opponentPiece.setCol(capturedCol); 
+               place(opponentPiece, capturedRow, capturedCol);
               
-              // update captured coordinates
-              nextCapturedCoords();
+               // update captured coordinates
+               nextCapturedCoords();
+             }
+
            }
 
            // no piece in original spot
