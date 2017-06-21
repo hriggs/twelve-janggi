@@ -137,7 +137,7 @@ public class Game extends JPanel {
                           
                           
                           if (!currentPlayer.isHuman()) {
-                                try{ Thread.sleep(130); } catch(Exception ex) {}
+                                try{ Thread.sleep(350); } catch(Exception ex) {}
                                 
                                 board.setPieceTeam("top"); // set the team to green/top
                                 
