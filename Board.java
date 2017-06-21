@@ -118,7 +118,7 @@ public class Board {
         
         // initialize captured pieces starting positions
         coordsInit();
-        
+
         // create a board of size 4 by 7
         board = new Square[4][7]; 
 
@@ -258,6 +258,9 @@ public class Board {
         } catch (IOException e) {
           System.out.println("Piece images could not be accessed");
         }
+        
+       // create pieces array
+       greenPieces = new ArrayList<Piece>();
        
        // create piece objects and add to board
        Piece piece = new Piece(redMinisterImg, "bottom", "Minister", 3, 0);
@@ -265,28 +268,28 @@ public class Board {
        
        piece = new Piece(greenMinisterImg, "top", "Minister", 0, 2);
        board[0][2].place(piece);
-       //greenPieces.add(piece);
+       greenPieces.add(piece);
        
        piece = new Piece(redGeneralImg, "bottom", "General", 3, 2);
        board[3][2].place(piece); 
        
        piece = new Piece(greenGeneralImg, "top", "General", 0, 0);
        board[0][0].place(piece);
-       //greenPieces.add(piece);
+       greenPieces.add(piece);
        
        piece = new Piece(redKingImg, "bottom", "King", 3, 1);
        board[3][1].place(piece); 
        
        piece = new Piece(greenKingImg, "top", "King", 0, 1);
        board[0][1].place(piece);
-       //greenPieces.add(piece);
+       greenPieces.add(piece);
        
        piece = new Piece(redManImg, "bottom", "Man", 2, 1);
        board[2][1].place(piece); 
        
        piece = new Piece(greenManImg, "top", "Man", 1, 1);
        board[1][1].place(piece);
-       //greenPieces.add(piece);
+       greenPieces.add(piece);
        
        // add "no pieces" to squares
        noPiece = new NoPiece();
@@ -376,10 +379,11 @@ public class Board {
          Square endTile = board[rowEnd][colEnd];
          
          // ending square must be of own type or of type center and must be empty
-         if ((endTile.getType().equals(teamSelected) || endTile.getType().equals("center")) && endTile.getPiece().getType().equals("none")) { 
+         if ((endTile.getType().equals(teamSelected) || endTile.getType().equals("center")) && 
+             endTile.getPiece().getType().equals("none")) { 
            
            // move piece
-           // store starting piece and reset ending coordinates
+           // store starting piece and ending coordinates
            Piece myPiece = board[rowStart][colStart].getPiece(); 
            myPiece.setRow(rowEnd);
            myPiece.setCol(colEnd);
@@ -470,7 +474,6 @@ public class Board {
                  board[rowStart][colStart].getPiece().setImage(greenLordImg);
                  board[rowStart][colStart].getPiece().setType("Lord");
                }
-               //return true;
              }
            }
          } else if (typeSelected.equals("King")) {
@@ -484,7 +487,7 @@ public class Board {
                
                if (teamSelected.equals("top")) { // top = green
                  
-                 System.out.println("green king in enemy territory");
+                 //System.out.println("green king in enemy territory");
                  
                  greenKingTurns++;
                  increasedGreenKingCount = true;
@@ -496,7 +499,7 @@ public class Board {
                  
                } else { // bottom = red
                  
-                 System.out.println("redking in enemy territory");
+                 //System.out.println("redking in enemy territory");
                  
                  redKingTurns++;
                  increasedRedKingCount = true;
@@ -587,6 +590,9 @@ public class Board {
                  gameOver = true;
                  winner = "green";
                }
+               
+               // add captured piece to list of green pieces
+               greenPieces.add(opponentPiece);
              }
              
              // only put piece on right if it is not a king (kings just disappear)
@@ -762,10 +768,145 @@ public class Board {
     }
     
     /**
+     * 
+     */
+    private boolean withinRegularBoard(int row, int col) {
+      if (row < 0 || row > 3 || col < 0 || col > 2) {
+        return false;
+      }
+      
+      return true;
+    }
+    
+    /**
      * TODO - has to do with computer player
      */
     public ArrayList<int[]> getValidMoves(int rowStart, int colStart, String pieceType, String pieceTeam) {
-      return null;
+      
+      ArrayList<int[]> movesList = new ArrayList<int[]>();
+      
+      // for testing first move:
+      //int[] move = {2, 1};
+      //movesList.add(move);
+      
+      // if piece on right
+       if (colStart > 3) { // TODO - deal with later
+         return movesList;
+       }
+       
+       int[] move = new int[2];
+       int rowEnd;
+       int colEnd;
+       
+       // diagonal moves up left and up right
+       if (pieceType.equals("Minister") || pieceType.equals("King")) {
+         
+         // diagonal up left 
+         rowEnd = rowStart - 1;
+         colEnd = colStart - 1;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+         
+         // diagonal up right 
+         rowEnd = rowStart - 1;
+         colEnd = colStart + 1;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+       }
+       
+       // diagonal moves down left and down right
+       if (pieceType.equals("Minister") || pieceType.equals("King") || pieceType.equals("Lord")) {
+         
+         // diagonal down left
+         rowEnd = rowStart + 1;
+         colEnd = colStart - 1;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+         
+         // diagonal down right
+         rowEnd = rowStart + 1;
+         colEnd = colStart + 1;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+       }
+       
+       // horizontal moves - left and right
+       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Lord")) {
+         
+         // left
+         rowEnd = rowStart;
+         colEnd = colStart - 1;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+         
+         // right
+         rowEnd = rowStart;
+         colEnd = colStart + 1;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+       } 
+       
+       // vertical move: up
+       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Lord")) {
+         
+         // up
+         rowEnd = rowStart - 1;
+         colEnd = colStart;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+       }
+       
+       // vertical move: down
+       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Man")) {
+         
+         // down
+         rowEnd = rowStart + 1;
+         colEnd = colStart;
+         
+         // check if coordinates within regular board and does not have own piece on that square
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getType().equals(teamSelected)) {
+           move[0] = rowEnd;
+           move[1] = colEnd;
+           movesList.add(move);
+         }
+       } 
+      
+      return movesList;
     }
     
     /**

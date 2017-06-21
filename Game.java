@@ -66,8 +66,7 @@ public class Game extends JPanel {
                   }   
 
                     // set selected piece, so that dragging will be visible and of correct type
-                    if (pieceNotSelected) 
-                    {    
+                    if (pieceNotSelected) {    
                         board.clearSelectedSquares();
                         
                         // get starting x and y coordinates of mouse
@@ -135,10 +134,20 @@ public class Game extends JPanel {
                           // switch to next player's turn
                           currentPlayer = getOpponent(currentPlayer);
                           
+                          
                           if (!currentPlayer.isHuman()) {
                                 try{ Thread.sleep(130); } catch(Exception ex) {}
+                                
+                                board.setPieceTeam("top"); // set the team to green/top
+                                
                                 board.clearSelectedSquares();
                                 hasMoved = currentPlayer.move(board, 0,0,0,0);
+                                
+                                if (board.isGameOver()) {
+                                  // display winner
+                                  displayWinner();
+                                }
+                                
                                 currentPlayer = getOpponent(currentPlayer);
                            }
                         
@@ -213,6 +222,11 @@ public class Game extends JPanel {
       this.redPlayer = redPlayer;
       this.greenPlayer = greenPlayer;
       
+       if (!greenPlayer.isHuman()) {
+         // get the green pieces for the computer player
+         greenPlayer.setPieces(board.getGreenPieces());
+       }
+      
       // allow for random number generation
       Random r = new Random();
       int number = r.nextInt(9);
@@ -228,13 +242,14 @@ public class Game extends JPanel {
         currentPlayer = greenPlayer;
         message += "Green player goes first!";
         icon = new ImageIcon("images/green-king.png", "green king image");
+        
+        if (!greenPlayer.isHuman()) {
+          board.setPieceTeam("top");
+          currentPlayer.move(board, 0, 0, 0, 0);
+          currentPlayer = getOpponent(currentPlayer);
+        }
       }
-      
-      if (!greenPlayer.isHuman()) {
-        // get the green pieces for the computer player
-        greenPlayer.setPieces(board.getGreenPieces());
-      }
-      
+
       // display coin flip results
       JOptionPane.showMessageDialog(null, message, "The coin flip", 1, icon);
     }

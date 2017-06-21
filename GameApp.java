@@ -116,7 +116,7 @@ public class GameApp {
 
         // play against computer as viking
         JMenuItem computer1Item = new JMenuItem("Play as red against computer");
-        /*computer1Item.addActionListener(new ActionListener() {
+        computer1Item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) { 
                     // create players
                     Player player1 = new HumanPlayer("bottom");
@@ -126,7 +126,7 @@ public class GameApp {
                     game.resetGame(); 
                     game.setPlayers(player1, player2); 
                 }
-            }); */
+            }); 
         gameMenu.add(computer1Item);
 
         // help
