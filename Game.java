@@ -129,6 +129,7 @@ public class Game extends JPanel {
                           if (board.isGameOver()) {
                             // display winner
                             displayWinner();
+                            return;
                           }
                           
                           // switch to next player's turn
