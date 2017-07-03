@@ -114,13 +114,13 @@ public class GameApp {
             }); 
         gameMenu.add(humanItem);
 
-        // play against computer as viking
-        JMenuItem computer1Item = new JMenuItem("Play as red against computer");
+        // play against computer that make random moves
+        JMenuItem computer1Item = new JMenuItem("Play as red against random AI player");
         computer1Item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) { 
                     // create players
                     Player player1 = new HumanPlayer("bottom");
-                    Player player2 = new ComputerPlayer("top");
+                    Player player2 = new ComputerPlayer("top", 1);
 
                     // reset game
                     game.resetGame(); 
@@ -128,6 +128,21 @@ public class GameApp {
                 }
             }); 
         gameMenu.add(computer1Item);
+        
+        // protect king AI player
+        JMenuItem computer2Item = new JMenuItem("Play as red against AI player that protects the king");
+        computer2Item.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { 
+                    // create players
+                    Player player1 = new HumanPlayer("bottom");
+                    Player player2 = new ComputerPlayer("top", 2);
+
+                    // reset game
+                    game.resetGame(); 
+                    game.setPlayers(player1, player2); 
+                }
+            }); 
+        gameMenu.add(computer2Item);
 
         // help
         JMenu helpMenu = new JMenu("Help");

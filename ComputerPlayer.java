@@ -8,12 +8,16 @@ import java.util.*;
  * @version Version 1
  */
 public class ComputerPlayer extends Player {
+  
+  // 1 == random strategy
+  private int strategy;
 
     /**
      * Constructor for objects of class ComputerPlayer
      */
-    public ComputerPlayer(String team) {
+    public ComputerPlayer(String team, int strategy) {
         super(team);     
+        this.strategy = strategy;
     }
 
 
@@ -26,19 +30,8 @@ public class ComputerPlayer extends Player {
     public boolean isHuman() {
         return false; 
     }
- 
-    /**
-     * Allows the player to make a move using starting and ending coordinates. 
-     * If successful, return true. Otherwise, return false. 
-     * 
-     * @param  colStart    the starting column
-     * @param  rowStart    the starting row
-     * @param  colEnd    the ending column
-     * @param  rowEnd    the ending row
-     * @return    true if successful, otherwise false
-     */
-     @Override
-     public boolean move(Board board, int xStart, int yStart, int xEnd, int yEnd) {
+
+     public boolean randomMove(Board board, int xStart, int yStart, int xEnd, int yEnd) {
        
         // if board not found, return false
         if (board == null) {
@@ -69,7 +62,7 @@ public class ComputerPlayer extends Player {
           
           System.out.println("piece type and team: " + piece.getTeam() + " " + piece.getType());
           
-          // get valid moves for piece - currently only returning first possible coordinates for the man
+          // get valid moves for piece 
           validMoves = board.getValidMoves(piece.getRow(), piece.getCol(), piece.getType(), "Green");
           
           System.out.println("got valid moves");
@@ -112,4 +105,79 @@ public class ComputerPlayer extends Player {
         // no valid moves - should never reach this
         return false;  
      }
+     
+     public boolean protectKingMove(Board board, int xStart, int yStart, int xEnd, int yEnd) {
+       
+       System.out.println("in protect king move");
+       
+        // if board not found, return false
+        if (board == null) {
+            return false;
+        }
+        
+        // get pieces
+        ArrayList<Piece> pieces = getPieces();
+        
+        Piece piece;
+        ArrayList<int[]> validMoves;
+        int[] chosenMove;
+        
+        // look for piece that can take king
+        for (int i = 0; i < pieces.size(); i++) {
+          
+          // get piece in list
+          piece = pieces.get(i);
+          
+          // get valid moves for piece 
+          validMoves = board.getValidMoves(piece.getRow(), piece.getCol(), piece.getType(), "Green");
+          
+          for (int j = 0; j < validMoves.size(); j++) {
+            
+            chosenMove = validMoves.get(j);
+            
+            if (piece.getType().equals("King")) {
+              System.out.println("looking at king's moves");
+              
+              System.out.println("validMoves size for KING: " + validMoves.size());
+            
+              System.out.println("row: " + chosenMove[0] + " column: " + chosenMove[1]);
+            }
+            
+            if (board.getPieceType(chosenMove[0], chosenMove[1]).equals("King")) {
+              board.movePiece(piece.getRow(), piece.getCol(), chosenMove[0], chosenMove[1]);
+              return true;
+            }
+          }
+        }
+        
+                  
+        // king could not be captured
+          
+        // TODO - do not move where king can be captured next turn
+          
+        // make a random move
+        return randomMove(board, xStart, yStart, xEnd, yEnd);
+        
+     }
+     
+    /**
+     * Allows the player to make a move using starting and ending coordinates. 
+     * If successful, return true. Otherwise, return false. 
+     * 
+     * @param  colStart    the starting column
+     * @param  rowStart    the starting row
+     * @param  colEnd    the ending column
+     * @param  rowEnd    the ending row
+     * @return    true if successful, otherwise false
+     */
+    @Override
+    public boolean move(Board board, int xStart, int yStart, int xEnd, int yEnd) {
+      if (strategy == 1) {
+        return randomMove(board, xStart, yStart, xEnd, yEnd);
+      } else if (strategy == 2) {
+        return protectKingMove(board, xStart, yStart, xEnd, yEnd); 
+      }
+      
+      return false;
+    }
 }
