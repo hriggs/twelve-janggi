@@ -799,16 +799,27 @@ public class Board {
       // for testing first move:
       //int[] move = {2, 1};
       //movesList.add(move);
-      
-      // if piece on right
-       if (colStart > 3) { // TODO - deal with later
-         return movesList;
-       }
-       
+         
        int[] move = new int[2];
        int rowEnd;
        int colEnd;
-       
+      
+      // if piece on right
+       if (colStart > 3) { 
+         for (int row = 0; row < 3; row++) {
+           for (int col = 0; col < 3; col++) {
+             if (board[row][col].getPiece().getType().equals("none")) {
+               move[0] = row;
+               move[1] = col;
+               
+               movesList.add(move);
+             }
+           }
+         }
+         
+         return movesList;
+       }
+
        // diagonal moves up left and up right
        if (pieceType.equals("Minister") || pieceType.equals("King")) {
          
