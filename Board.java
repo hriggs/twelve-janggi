@@ -576,6 +576,17 @@ public class Board {
                  gameOver = true;
                  winner = "red";
                }
+               
+               // remove green piece from list
+               for (int i = 0; i < greenPieces.size(); i++) {
+                 if (greenPieces.get(i) == opponentPiece) {
+                   System.out.println("red took a green piece and green was removed from list x and y: " 
+                                      + opponentPiece.getRow() + opponentPiece.getCol());
+                   greenPieces.remove(i); 
+                   break;
+                 }
+               }
+               
              } else {  // top = green
                if (type.equals("Minister")) {
                  opponentPiece.setImage(greenMinisterImg);

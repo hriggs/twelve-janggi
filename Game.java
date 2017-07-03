@@ -124,8 +124,9 @@ public class Game extends JPanel {
                         hasMoved = currentPlayer.move(board, xStart, yStart, xEnd, yEnd);
                         
                         repaint();
+                        
                         if (hasMoved) {
-                          
+
                           if (board.isGameOver()) {
                             // display winner
                             displayWinner();
@@ -142,11 +143,13 @@ public class Game extends JPanel {
                                 board.setPieceTeam("top"); // set the team to green/top
                                 
                                 board.clearSelectedSquares();
+                                
                                 hasMoved = currentPlayer.move(board, 0,0,0,0);
                                 
                                 if (board.isGameOver()) {
                                   // display winner
                                   displayWinner();
+                                  return;
                                 }
                                 
                                 currentPlayer = getOpponent(currentPlayer);
