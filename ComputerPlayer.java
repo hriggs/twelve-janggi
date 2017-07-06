@@ -67,7 +67,7 @@ public class ComputerPlayer extends Player {
             validMoves = greenKingMoves;
           } else {
             // get valid moves for piece 
-            validMoves = board.getValidMoves(piece);
+            validMoves = board.getValidMoves(piece, false);
           }
           
           // there are valid moves available, shuffle them
@@ -136,7 +136,7 @@ public class ComputerPlayer extends Player {
           piece = pieces.get(i);
           
           // get valid moves for piece 
-          validMoves = board.getValidMoves(piece);
+          validMoves = board.getValidMoves(piece, false);
           
           // store king's moves
           if (piece.getType().equals("King")) {
@@ -183,7 +183,7 @@ public class ComputerPlayer extends Player {
           //System.out.println("LOOK HEREEEEEEEEEEEEEEE: " + piece.getTeam() + " " + piece.getType());
           
           // get valid moves for red piece 
-          validMoves = board.getValidMoves(piece);
+          validMoves = board.getValidMoves(piece, true);
           
           // iterate over all possible moves for red piece
           for (int j = 0; j < validMoves.size(); j++) {
@@ -230,7 +230,7 @@ public class ComputerPlayer extends Player {
               validMoves = greenKingMoves;
             } else {
               // get valid moves for piece 
-              validMoves = board.getValidMoves(piece);
+              validMoves = board.getValidMoves(piece, false);
             }
           
             // try every move until find valid one

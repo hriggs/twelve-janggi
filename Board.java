@@ -817,9 +817,12 @@ public class Board {
     }
     
     /**
-     * TODO - has to do with computer player
+     * Returns the valid moves for the given piece. 
+     * If allSquares == true, then return all moves, even if your square is on it, 
+     * else do not include those squares.
+     * 
      */
-    public ArrayList<int[]> getValidMoves(Piece piece) {
+    public ArrayList<int[]> getValidMoves(Piece piece, boolean allSquares) {
       
       int rowStart = piece.getRow();
       int colStart = piece.getCol();
@@ -831,8 +834,8 @@ public class Board {
       
       ArrayList<int[]> movesList = new ArrayList<int[]>();
          
-       int rowEnd;
-       int colEnd;
+      int rowEnd;
+      int colEnd;
       
       // if piece on right
        if (colStart > 3) { 
@@ -861,7 +864,8 @@ public class Board {
          colEnd = colStart - 1;
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
+           
            System.out.println("diagonal up left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
            
 //                    if (pieceType.equals("King")) {
@@ -879,7 +883,7 @@ public class Board {
          colEnd = colStart + 1;
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
            System.out.println("diagonal up right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
            
                              
@@ -905,7 +909,7 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
 //                             if (pieceType.equals("King")) {
            System.out.println("diagonal down left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 //         }
@@ -924,7 +928,7 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
 //                             if (pieceType.equals("King")) {
            System.out.println("diagonal down right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 //         }
@@ -946,7 +950,7 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
 //                             if (pieceType.equals("King")) {
            System.out.println("left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 //         }
@@ -964,7 +968,7 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
 //                             if (pieceType.equals("King")) {
            System.out.println("right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 //         }
@@ -987,7 +991,7 @@ public class Board {
          //System.out.println("NOT within conditional up in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
            
 //           if (pieceType.equals("King")) {
             System.out.println("up in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
@@ -1008,7 +1012,7 @@ public class Board {
          colEnd = colStart;
 
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+         if (withinRegularBoard(rowEnd, colEnd) && (allSquares || !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam))) {
 //                             if (pieceType.equals("King")) {
            System.out.println("down in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 //         }
@@ -1018,15 +1022,10 @@ public class Board {
            movesList.add(movedDown);
          }
        } 
-       
-       // TODO -- ONLY DOWN COORDINATES HERE
-       /*System.out.println("in get moves before exiting: ");
-       for (int i = 0; i < movesList.size(); i++) {
-         System.out.println("row: " + movesList.get(i)[0] + " col: " + movesList.get(i)[1]);
-       }*/
       
       return movesList;
     }
+    
     
     /**
      * Closes the moves file, so information will be saved.
