@@ -248,13 +248,33 @@ public class ComputerPlayer extends Player {
               }
             }
           }
+          
+          System.out.println("TRIED TO TAKE PIECE, but couldn't");
+          
+          System.out.println("greenKingMoves.size(): " + greenKingMoves.size());
+          
+          for (int i = 0; i < greenKingMoves.size(); i++) {
+            System.out.println("king move row: " + greenKingMoves.get(i)[0] + " col: " + greenKingMoves.get(i)[1]);
+          }
+          
+          // piece could not be safely taken - move king out of the way
+          if (!greenKingMoves.isEmpty()) {
+            // shuffle king's moves
+            Collections.shuffle(greenKingMoves);
+          
+            // move king out of the way
+            System.out.println("MOVING KING OUT OF THE WAY");
+            
+            System.out.println("kingRow: " + kingRow + " kingCol: " + kingCol + "moving to: " + greenKingMoves.get(0)[0] + greenKingMoves.get(0)[1]);
+
+            // TODO - something happened in movePiece that shouldn't have
+            boolean ret = board.movePiece(kingRow, kingCol, greenKingMoves.get(0)[0], greenKingMoves.get(0)[1]);
+            System.out.println("ret from trying to move king out of the way: " + ret);
+          }
         }
-        
-        // TODO - piece could not be safely taken -- move king out of the way
         
         // make a random move
         return randomMove(board, xStart, yStart, xEnd, yEnd, greenKingMoves);
-        
      }
      
     /**

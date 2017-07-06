@@ -838,7 +838,7 @@ public class Board {
       int colEnd;
       
       // if piece on right
-       if (colStart > 3) { 
+      if (colStart > 3 && !allSquares) { 
          for (int row = 0; row < 3; row++) {
            for (int col = 0; col < 3; col++) {
              if (board[row][col].getPiece().getType().equals("none")) {
@@ -853,7 +853,7 @@ public class Board {
          }
          
          return movesList;
-       }
+      }
 
        // diagonal moves up left and up right
        if (pieceType.equals("Minister") || pieceType.equals("King") || 
