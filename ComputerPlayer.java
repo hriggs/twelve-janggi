@@ -31,7 +31,7 @@ public class ComputerPlayer extends Player {
         return false; 
     }
 
-     public boolean randomMove(Board board, int xStart, int yStart, int xEnd, int yEnd) {
+     public boolean randomMove(Board board, int xStart, int yStart, int xEnd, int yEnd, ArrayList<int[]> greenKingMoves) {
        
         // if board not found, return false
         if (board == null) {
@@ -43,11 +43,11 @@ public class ComputerPlayer extends Player {
         
         if (!pieces.isEmpty()) {
           
-          System.out.println("pieces list not empty"); // NOT SEEN
+          //System.out.println("pieces list not empty"); // NOT SEEN
           // shuffle pieces
           Collections.shuffle(pieces);
         } else {
-          System.out.println("pieces list is empty");
+          //System.out.println("pieces list is empty");
           return false;
         }
         
@@ -60,12 +60,15 @@ public class ComputerPlayer extends Player {
           // get piece in list
           piece = pieces.get(i);
           
-          System.out.println("piece type and team: " + piece.getTeam() + " " + piece.getType());
+          //System.out.println("piece type and team: " + piece.getTeam() + " " + piece.getType());
           
-          // get valid moves for piece 
-          validMoves = board.getValidMoves(piece.getRow(), piece.getCol(), piece.getType(), "Green");
-          
-          System.out.println("got valid moves");
+          // thinking about moving king and passed in green king moves
+          if (piece.getType().equals("King") && greenKingMoves != null) {
+            validMoves = greenKingMoves;
+          } else {
+            // get valid moves for piece 
+            validMoves = board.getValidMoves(piece);
+          }
           
           // there are valid moves available, shuffle them
           if (!validMoves.isEmpty()) {
@@ -76,7 +79,7 @@ public class ComputerPlayer extends Player {
           
           int[] chosenMove;
           
-          System.out.println("validMoves.size(): " + validMoves.size());
+          //System.out.println("validMoves.size(): " + validMoves.size());
           
           // try every move until find valid one
           for (int k = 0; k < validMoves.size(); k++) {
@@ -86,16 +89,14 @@ public class ComputerPlayer extends Player {
             
             board.setPieceType(piece.getType());
             
-            // board.setPieceType("Man"); // only for testing
-            
             // move piece
             boolean moved = board.movePiece(piece.getRow(), piece.getCol(), chosenMove[0], chosenMove[1]); 
             
-            System.out.println("ret: " + moved);
+            //System.out.println("ret: " + moved);
             
             if (moved == true) {
-              System.out.println("board moved: " + piece.getTeam() + " " + piece.getType() + 
-                                 " to row " + chosenMove[0] + " and column " + chosenMove[1]);
+              //System.out.println("board moved: " + piece.getTeam() + " " + piece.getType() + 
+                                 //" to row " + chosenMove[0] + " and column " + chosenMove[1]);
               return true;
             }
           }
@@ -119,8 +120,14 @@ public class ComputerPlayer extends Player {
         ArrayList<Piece> pieces = getPieces();
         
         Piece piece;
-        ArrayList<int[]> validMoves;
+        ArrayList<int[]> validMoves = new ArrayList<int[]>();
         int[] chosenMove;
+        
+        ArrayList<int[]> greenKingMoves = new ArrayList<int[]>();
+        
+        // my king's row and column
+        int kingRow = -1;
+        int kingCol = -1;
         
         // look for piece that can take king
         for (int i = 0; i < pieces.size(); i++) {
@@ -129,18 +136,23 @@ public class ComputerPlayer extends Player {
           piece = pieces.get(i);
           
           // get valid moves for piece 
-          validMoves = board.getValidMoves(piece.getRow(), piece.getCol(), piece.getType(), "Green");
+          validMoves = board.getValidMoves(piece);
+          
+          // store king's moves
+          if (piece.getType().equals("King")) {
+            greenKingMoves = validMoves;
+            kingRow = piece.getRow();
+            kingCol = piece.getCol();
+          }
           
           for (int j = 0; j < validMoves.size(); j++) {
             
             chosenMove = validMoves.get(j);
             
             if (piece.getType().equals("King")) {
-              System.out.println("looking at king's moves");
-              
-              System.out.println("validMoves size for KING: " + validMoves.size());
-            
-              System.out.println("row: " + chosenMove[0] + " column: " + chosenMove[1]);
+              //System.out.println("looking at king's moves");
+              //System.out.println("validMoves size for KING: " + validMoves.size());
+              //System.out.println("row: " + chosenMove[0] + " column: " + chosenMove[1]);
             }
             
             if (board.getPieceType(chosenMove[0], chosenMove[1]).equals("King")) {
@@ -149,14 +161,99 @@ public class ComputerPlayer extends Player {
             }
           }
         }
-        
                   
-        // king could not be captured
+        // opponent's king could not be captured, so...
+
+        // get list of red pieces
+        ArrayList<Piece> redPieces = board.getRedPieces();
+        
+        // store coordinates of piece that could take king
+        int enemyRow = -1;
+        int enemyCol = -1;
+        
+        System.out.println("number of redPieces: " + redPieces.size());
+        System.out.println("king row: " + kingRow + " col: " + kingCol);
+        
+        // check if king can be taken this turn and
+        // do not move where green king can be captured next turn
+        for (int i = 0; i < redPieces.size(); i++) {
+          // get red piece in list
+          piece = redPieces.get(i);
           
-        // TODO - do not move where king can be captured next turn
+          //System.out.println("LOOK HEREEEEEEEEEEEEEEE: " + piece.getTeam() + " " + piece.getType());
           
+          // get valid moves for red piece 
+          validMoves = board.getValidMoves(piece);
+          
+          // iterate over all possible moves for red piece
+          for (int j = 0; j < validMoves.size(); j++) {
+            
+            chosenMove = validMoves.get(j);
+            
+            //System.out.println("move row: " + chosenMove[0] + " col: " + chosenMove[1]);
+            
+            // check if this piece can take king where king is right now
+            if (chosenMove[0] == kingRow && chosenMove[1] == kingCol) {
+              System.out.println("KING CAN BE CAPTURED NEXT TURN by " + piece.getTeam() + " " + piece.getType());
+              
+              // save current location of enemy
+              enemyRow = piece.getRow();
+              enemyCol = piece.getCol();
+            }
+            
+            // iterate over all possible king moves and remove those that would allow king to be captured next turn
+            for (int k = 0; k < greenKingMoves.size(); k++) {
+              if (chosenMove[0] == greenKingMoves.get(k)[0] && chosenMove[1] == greenKingMoves.get(k)[1]) {
+                System.out.println("REMOVED from king's move row: " + chosenMove[0] + " " + chosenMove[1]);
+                greenKingMoves.remove(k);
+              }
+            }
+
+          }
+        }
+        
+        // if king can be taken where it is right now, try to take that piece
+        if (enemyRow != -1) {
+          
+          System.out.println("IN SAVE KING LOOP");
+          System.out.println("enemyRow: " + enemyRow + " enemyCol: " + enemyCol);
+          
+          // iterate over all green pieces
+          for (int i = 0; i < pieces.size(); i++) {
+          
+            // get piece in list
+            piece = pieces.get(i);
+          
+            // thinking about moving king and passed in green king moves
+            if (piece.getType().equals("King") && greenKingMoves != null) {
+              System.out.println("using greenKingMoves");
+              validMoves = greenKingMoves;
+            } else {
+              // get valid moves for piece 
+              validMoves = board.getValidMoves(piece);
+            }
+          
+            // try every move until find valid one
+            for (int k = 0; k < validMoves.size(); k++) {
+            
+              // choose valid move - 0 index = row, 1 index = column
+              chosenMove = validMoves.get(k);
+              
+              // check if this move takes attacking piece
+              if (chosenMove[0] == enemyRow && chosenMove[1] == enemyCol) {
+                System.out.println("TAKE ATTACKING PIECE");
+                board.setPieceType(piece.getType());
+                board.movePiece(piece.getRow(), piece.getCol(), chosenMove[0], chosenMove[1]);
+                return true;
+              }
+            }
+          }
+        }
+        
+        // TODO - piece could not be safely taken -- move king out of the way
+        
         // make a random move
-        return randomMove(board, xStart, yStart, xEnd, yEnd);
+        return randomMove(board, xStart, yStart, xEnd, yEnd, greenKingMoves);
         
      }
      
@@ -173,7 +270,7 @@ public class ComputerPlayer extends Player {
     @Override
     public boolean move(Board board, int xStart, int yStart, int xEnd, int yEnd) {
       if (strategy == 1) {
-        return randomMove(board, xStart, yStart, xEnd, yEnd);
+        return randomMove(board, xStart, yStart, xEnd, yEnd, null);
       } else if (strategy == 2) {
         return protectKingMove(board, xStart, yStart, xEnd, yEnd); 
       }

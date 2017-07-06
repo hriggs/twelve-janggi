@@ -27,6 +27,7 @@ public class Board {
     private Piece selectedPiece;
     
     private ArrayList<Piece> greenPieces;
+    private ArrayList<Piece> redPieces;
     
     private Piece noPiece;
     
@@ -259,12 +260,14 @@ public class Board {
           System.out.println("Piece images could not be accessed");
         }
         
-       // create pieces array
+       // create pieces arrays
        greenPieces = new ArrayList<Piece>();
+       redPieces = new ArrayList<Piece>();
        
-       // create piece objects and add to board
+       // create piece objects and add to board and lists of pieces
        Piece piece = new Piece(redMinisterImg, "bottom", "Minister", 3, 0);
        board[3][0].place(piece); 
+       redPieces.add(piece);
        
        piece = new Piece(greenMinisterImg, "top", "Minister", 0, 2);
        board[0][2].place(piece);
@@ -272,6 +275,7 @@ public class Board {
        
        piece = new Piece(redGeneralImg, "bottom", "General", 3, 2);
        board[3][2].place(piece); 
+       redPieces.add(piece);
        
        piece = new Piece(greenGeneralImg, "top", "General", 0, 0);
        board[0][0].place(piece);
@@ -279,6 +283,7 @@ public class Board {
        
        piece = new Piece(redKingImg, "bottom", "King", 3, 1);
        board[3][1].place(piece); 
+       redPieces.add(piece);
        
        piece = new Piece(greenKingImg, "top", "King", 0, 1);
        board[0][1].place(piece);
@@ -286,6 +291,7 @@ public class Board {
        
        piece = new Piece(redManImg, "bottom", "Man", 2, 1);
        board[2][1].place(piece); 
+       redPieces.add(piece);
        
        piece = new Piece(greenManImg, "top", "Man", 1, 1);
        board[1][1].place(piece);
@@ -577,6 +583,9 @@ public class Board {
                  winner = "red";
                }
                
+               // add captured piece to list of red pieces
+               redPieces.add(opponentPiece);
+               
                // remove green piece from list
                for (int i = 0; i < greenPieces.size(); i++) {
                  if (greenPieces.get(i) == opponentPiece) {
@@ -604,6 +613,16 @@ public class Board {
                
                // add captured piece to list of green pieces
                greenPieces.add(opponentPiece);
+               
+               // remove green piece from list
+               for (int i = 0; i < redPieces.size(); i++) {
+                 if (redPieces.get(i) == opponentPiece) {
+                   System.out.println("green took a red piece and red was removed from list x and y: " 
+                                      + opponentPiece.getRow() + opponentPiece.getCol());
+                   redPieces.remove(i); 
+                   break;
+                 }
+               }
              }
              
              // only put piece on right if it is not a king (kings just disappear)
@@ -779,11 +798,18 @@ public class Board {
     }
     
     /**
+     * TODO - has to do with computer player
+     */
+    public ArrayList<Piece> getRedPieces() {
+      return redPieces;
+    }
+    
+    /**
      * 
      */
     private boolean withinRegularBoard(int row, int col) {
       if (row < 0 || row > 3 || col < 0 || col > 2) {
-        System.out.println("row or column invalid row: " + row + " col: " + col);
+        //System.out.println("row or column invalid row: " + row + " col: " + col);
         return false;
       }
       
@@ -793,10 +819,15 @@ public class Board {
     /**
      * TODO - has to do with computer player
      */
-    public ArrayList<int[]> getValidMoves(int rowStart, int colStart, String pieceType, String pieceTeam) {
+    public ArrayList<int[]> getValidMoves(Piece piece) {
+      
+      int rowStart = piece.getRow();
+      int colStart = piece.getCol();
+      String pieceType = piece.getType();
+      String pieceTeam = piece.getTeam();
       
 
-      System.out.println("START of new getValidMoves");
+      System.out.println("START of new getValidMoves: " + pieceTeam + " " + pieceType);
       
       ArrayList<int[]> movesList = new ArrayList<int[]>();
          
@@ -822,21 +853,20 @@ public class Board {
        }
 
        // diagonal moves up left and up right
-       if (pieceType.equals("Minister") || pieceType.equals("King")) {
+       if (pieceType.equals("Minister") || pieceType.equals("King") || 
+          (pieceType.equals("Lord") && pieceTeam.equals("bottom"))) {
          
          // diagonal up left 
          rowEnd = rowStart - 1;
          colEnd = colStart - 1;
          
-                  
-
-         
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
-           
-                    if (pieceType.equals("King")) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
            System.out.println("diagonal up left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+           
+//                    if (pieceType.equals("King")) {
+//           System.out.println("diagonal up left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
+//         }
           int[] movedUpLeft = new int[2];
                     
            movedUpLeft[0] = rowEnd;
@@ -849,12 +879,13 @@ public class Board {
          colEnd = colStart + 1;
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+           System.out.println("diagonal up right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
            
                              
-         if (pieceType.equals("King")) {
-           System.out.println("diagonal up right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+//         if (pieceType.equals("King")) {
+//           System.out.println("diagonal up right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
+//         }
            int[] movedUpRight = new int[2];
          
            movedUpRight[0] = rowEnd;
@@ -864,7 +895,8 @@ public class Board {
        }
        
        // diagonal moves down left and down right
-       if (pieceType.equals("Minister") || pieceType.equals("King") || pieceType.equals("Lord")) {
+       if (pieceType.equals("Minister") || pieceType.equals("King") || 
+          (pieceType.equals("Lord") && pieceTeam.equals("bottom"))) {
          
          // diagonal down left
          rowEnd = rowStart + 1;
@@ -873,10 +905,10 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
-                             if (pieceType.equals("King")) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+//                             if (pieceType.equals("King")) {
            System.out.println("diagonal down left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+//         }
                              
            int[] movedDownLeft = new int[2];
                              
@@ -892,10 +924,10 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
-                             if (pieceType.equals("King")) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+//                             if (pieceType.equals("King")) {
            System.out.println("diagonal down right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+//         }
                              
            int[] movedDownRight = new int[2];
            movedDownRight[0] = rowEnd;
@@ -914,10 +946,10 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
-                             if (pieceType.equals("King")) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+//                             if (pieceType.equals("King")) {
            System.out.println("left in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+//         }
                              
            int[] movedLeft = new int[2];
            movedLeft[0] = rowEnd;
@@ -932,10 +964,10 @@ public class Board {
 
          
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
-                             if (pieceType.equals("King")) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+//                             if (pieceType.equals("King")) {
            System.out.println("right in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+//         }
                              
            int[] movedRight = new int[2];
            movedRight[0] = rowEnd;
@@ -945,22 +977,21 @@ public class Board {
        } 
        
        // vertical move: up
-       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Lord")) {
+       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Lord") || 
+          (pieceType.equals("Man") && pieceTeam.equals("bottom"))) {
          
          // up
          rowEnd = rowStart - 1;
          colEnd = colStart;
          
-         System.out.println("NOT within conditional up in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         
+         //System.out.println("NOT within conditional up in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
 
-         
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
            
-           if (pieceType.equals("King")) {
-             System.out.println("up in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-           }
+//           if (pieceType.equals("King")) {
+            System.out.println("up in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
+//           }
            int[] movedUp = new int[2];
            movedUp[0] = rowEnd;
            movedUp[1] = colEnd;
@@ -969,19 +1000,18 @@ public class Board {
        }
        
        // vertical move: down
-       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Man")) {
+       if (pieceType.equals("General") || pieceType.equals("King") || pieceType.equals("Lord") || 
+          (pieceType.equals("Man") && pieceTeam.equals("top"))) {
          
          // down
          rowEnd = rowStart + 1;
          colEnd = colStart;
-         
 
-         
          // check if coordinates within regular board and does not have own piece on that square
-         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
-                             if (pieceType.equals("King")) {
+         if (withinRegularBoard(rowEnd, colEnd) && !board[rowEnd][colEnd].getPiece().getTeam().equals(pieceTeam)) {
+//                             if (pieceType.equals("King")) {
            System.out.println("down in get valid moves: rowEnd: " + rowEnd + " colEnd: " + colEnd);
-         }
+//         }
            int[] movedDown = new int[2];
            movedDown[0] = rowEnd;
            movedDown[1] = colEnd;
@@ -990,10 +1020,10 @@ public class Board {
        } 
        
        // TODO -- ONLY DOWN COORDINATES HERE
-       System.out.println("in get moves before exiting: ");
+       /*System.out.println("in get moves before exiting: ");
        for (int i = 0; i < movesList.size(); i++) {
          System.out.println("row: " + movesList.get(i)[0] + " col: " + movesList.get(i)[1]);
-       }
+       }*/
       
       return movesList;
     }
@@ -1014,5 +1044,10 @@ public class Board {
       if (writer != null) {
         writer.println("NEW GAME: \n");
       }
+    }
+    
+    
+    public Piece getPiece(int x, int y) {
+      return board[x][y].getPiece();
     }
 }

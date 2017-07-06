@@ -75,6 +75,11 @@ public class Game extends JPanel {
                         
                         if (board.isInBounds(yStart/150, xStart/150)) {
                           
+                          // print valid moves for this piece  - TODO - remove later
+                          board.getValidMoves(board.getPiece(yStart/150, xStart/150));
+                          
+                          System.out.println("AFTER PIECE WAS CLICKED\n");
+                          
                           // do not let player move opponent's piece
                           if (!currentPlayer.getTeam().equals(board.getPieceTeam(yStart/150, xStart/150))) {
                             return;
