@@ -243,11 +243,11 @@ public class Game extends JPanel {
       String message = "Flipping coin... ";
       ImageIcon icon;
       
-      if (number < 5) {
+      //if (number < 5) {
         currentPlayer = redPlayer;
         message += "Red player goes first!";
         icon = new ImageIcon("images/red-king.png", "red king image");
-      } else {
+      /*} else {
         currentPlayer = greenPlayer;
         message += "Green player goes first!";
         icon = new ImageIcon("images/green-king.png", "green king image");
@@ -257,7 +257,7 @@ public class Game extends JPanel {
           currentPlayer.move(board, 0, 0, 0, 0);
           currentPlayer = getOpponent(currentPlayer);
         }
-      }
+      }*/
 
       // display coin flip results
       JOptionPane.showMessageDialog(null, message, "The coin flip", 1, icon);

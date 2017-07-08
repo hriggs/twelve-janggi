@@ -100,8 +100,24 @@ public class ComputerPlayer extends Player {
               return true;
             }
           }
-          
         }
+        
+        // if you get here, that means that only the king is left and he has no valid moves
+        // make move that will lose game:
+        
+        System.out.println("king has to make game-losing move\n");
+        
+        // get king
+        piece = getPieces().get(0); 
+        
+        // get king's moves
+        validMoves = board.getValidMoves(piece, false);
+        
+        // shuffle moves
+        Collections.shuffle(validMoves);
+        
+        // move king
+        board.movePiece(piece.getRow(), piece.getCol(), validMoves.get(0)[0], validMoves.get(0)[1]); 
         
         // no valid moves - should never reach this
         return false;  
@@ -156,6 +172,7 @@ public class ComputerPlayer extends Player {
             }
             
             if (board.getPieceType(chosenMove[0], chosenMove[1]).equals("King")) {
+              board.setPieceType(piece.getType());
               board.movePiece(piece.getRow(), piece.getCol(), chosenMove[0], chosenMove[1]);
               return true;
             }
@@ -204,7 +221,7 @@ public class ComputerPlayer extends Player {
             // iterate over all possible king moves and remove those that would allow king to be captured next turn
             for (int k = 0; k < greenKingMoves.size(); k++) {
               if (chosenMove[0] == greenKingMoves.get(k)[0] && chosenMove[1] == greenKingMoves.get(k)[1]) {
-                System.out.println("REMOVED from king's move row: " + chosenMove[0] + " " + chosenMove[1]);
+                System.out.println("REMOVED from king's move row: " + chosenMove[0] + " " + chosenMove[1] + " because of " + piece.getType());
                 greenKingMoves.remove(k);
               }
             }
@@ -264,12 +281,13 @@ public class ComputerPlayer extends Player {
           
             // move king out of the way
             System.out.println("MOVING KING OUT OF THE WAY");
-            
             System.out.println("kingRow: " + kingRow + " kingCol: " + kingCol + "moving to: " + greenKingMoves.get(0)[0] + greenKingMoves.get(0)[1]);
 
             // TODO - something happened in movePiece that shouldn't have
+            board.setPieceType("King");
             boolean ret = board.movePiece(kingRow, kingCol, greenKingMoves.get(0)[0], greenKingMoves.get(0)[1]);
             System.out.println("ret from trying to move king out of the way: " + ret);
+            return true;
           }
         }
         

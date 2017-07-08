@@ -311,7 +311,7 @@ public class Board {
         
        // put no pieces on center squares of left side of board
        board[1][0].place(noPiece); 
-       board[1][2].place(noPiece); 
+       board[1][2].place(noPiece);
        board[2][0].place(noPiece); 
        board[2][2].place(noPiece); 
        
@@ -321,7 +321,7 @@ public class Board {
      /**
       * Increased the captured coordinates.
       */
-     private void nextCapturedCoords() {
+     /*private void nextCapturedCoords() {
        if (teamSelected.equals("bottom")) { // update bottom/red
          
          if (redCol == 6) {
@@ -338,30 +338,58 @@ public class Board {
            greenCol++;
          }
        }
+     }*/
+     
+     /**
+      * Go to the next captured coordinates
+      */
+     private void nextCapturedCoords() {
+       if (teamSelected.equals("top")) { // update top/green
+         for (int row = 0; row < 2; row++) {
+           for (int col = 4; col < 7; col++) {
+             if (board[row][col].getPiece().getType().equals("none")) {
+               greenRow = row;
+               greenCol = col;
+               return;
+             }
+           }
+         }
+       } else { // update bottom/red
+        for (int row = 2; row < 4; row++) {
+           for (int col = 4; col < 7; col++) {
+             if (board[row][col].getPiece().getType().equals("none")) {
+               System.out.println("new redRow: " + row + "  new redCol: " + col);
+               redRow = row;
+               redCol = col;
+               return;
+             }
+           }
+         }
+       }
      }
      
      /**
       * Decrease the captured coordinates.
       */
-     private void prevCapturedCoords() {
-       if (teamSelected.equals("bottom")) { // update bottom/red
-         
-         if (redCol == 4 && redRow == 3) {
-           redRow = 2;
-           redCol = 6;
-         } else {
-           redCol--;
-         }
-         
-       } else { // update top/green
-         if (greenCol == 4 && greenRow == 1) {
-           greenRow = 0;
-           greenCol = 6;
-         } else {
-           greenCol--;
-         }
-       }
-     }
+//     private void prevCapturedCoords() {
+//       if (teamSelected.equals("bottom")) { // update bottom/red
+//         
+//         if (redCol == 4 && redRow == 3) {
+//           redRow = 2;
+//           redCol = 6;
+//         } else {
+//           redCol--;
+//         }
+//         
+//       } else { // update top/green
+//         if (greenCol == 4 && greenRow == 1) {
+//           greenRow = 0;
+//           greenCol = 6;
+//         } else {
+//           greenCol--;
+//         }
+//       }
+//     }
 
     /**
      * Allows a piece to be made between starting and ending coordinates. If move can be made, return true. Otherwise, return false. 
@@ -401,7 +429,7 @@ public class Board {
            place(myPiece, rowEnd, colEnd); 
            
            // reset captured coordinates
-           prevCapturedCoords();
+           nextCapturedCoords();
            
            // check if king won by being in enemy territory for second turn
            // if var == 1, then that means the first turn in the enemy territory was the previous turn
@@ -430,8 +458,12 @@ public class Board {
          return false;
        }
        
+       System.out.println("teamSelected: " + teamSelected + " typeSelected: " + typeSelected);
+       
        // can only move to square with no piece or opponent's piece
        if (!board[rowEnd][colEnd].getPiece().getTeam().equals(teamSelected)) {
+         
+         System.out.println("end square does not have my own piece on it");
          
          boolean canMove = false;
          boolean increasedRedKingCount = false;
